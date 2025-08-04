@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #6b46c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #805ad5;
+}
+
+/* Product card hover effect */
+.product-card {
+    transition: all 0.3s ease;
+    border: 1px solid #2d3748;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(109, 40, 217, 0.3);
+    border-color: #805ad5;
+}
+
+/* Image gallery styles */
+.image-gallery {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+}
+
+.gallery-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.5s ease;
+    opacity: 0;
+}
+
+.gallery-image.active {
+    opacity: 1;
+}
+
+.gallery-nav {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.gallery-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gallery-dot.active {
+    background: white;
+    transform: scale(1.2);
+}
+
+/* Size selector styles */
+.size-selector {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.size-option {
+    border: 1px solid #4a5568;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.size-option:hover {
+    border-color: #805ad5;
+}
+
+.size-option.selected {
+    background: #6b46c1;
+    border-color: #6b46c1;
+    color: white;
+}
+
+.size-option.sold-out {
+    opacity: 0.5;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+/* Color selector styles */
+.color-selector {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.selected {
+    border-color: white;
+    box-shadow: 0 0 0 2px #6b46c1;
+}
+
+/* Featured pulse animation */
+@keyframes pulse-slow {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(109, 40, 217, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(109, 40, 217, 0);
+    }
+}
+
+.featured {
+    position: relative;
+    overflow: hidden;
+}
+
+.featured::after {
+    content: "LIMITED";
+    position: absolute;
+    top: 10px;
+    right: -30px;
+    background: #6b46c1;
+    color: white;
+    padding: 2px 30px;
+    font-size: 12px;
+    font-weight: bold;
+    transform: rotate(45deg);
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+/* Loading spinner */
+.loading-spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid #6b46c1;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Custom Swal2 styling */
+.swal2-popup {
+    font-family: "Poppins", sans-serif !important;
+    background: #1a202c !important;
+    color: white !important;
+}
+
+.swal2-title, .swal2-content {
+    color: white !important;
+}
+
+.swal2-confirm {
+    background-color: #6b46c1 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .product-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .gallery-nav {
+        bottom: 5px;
+    }
+    
+    .gallery-dot {
+        width: 8px;
+        height: 8px;
+    }
+}
+/* Newsletter modal animation */
+#newsletter-modal {
+    transition: opacity 0.3s ease;
+}
+
+#newsletter-modal:not(.hidden) {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

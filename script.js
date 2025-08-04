@@ -645,7 +645,7 @@ function sendOrderToServer(order) {
             didOpen: () => Swal.showLoading()
         });
 
-        const scriptUrl = "https://script.google.com/macros/s/AKfycbzBwxrxGzxqtQSYwprXbW9qVwu6xQPPt1P4QTxlp1VUZ7-Mi7BLKVHgTz3pso1nteAJYg/exec";
+        const scriptUrl = "https://script.google.com/macros/s/AKfycbxTXxN4jvaQ3NrmyP6JiFiaRsh0VSqL-oClmLRJD-fe2ftPqut3E9K_880NHLuXYDbeFA/exec";
         
         // Convert data to URL parameters
         const params = new URLSearchParams();

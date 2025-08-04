@@ -634,85 +634,62 @@ function processOrder(customerInfo) {
 }
 
 // Send order to server
+
 function sendOrderToServer(order) {
     Swal.fire({
-        title: 'Processing Your Order...',
-        html: `
-            <div class="flex flex-col items-center">
-                <div class="anime-spinner mb-4"></div>
-                <p class="text-gray-300">Securing your limited edition items...</p>
-            </div>
-        `,
-        showConfirmButton: false,
+        title: "Sending...",
+        titleColor: "#fc1111",
+        text: "Please wait while your purchase is being processed.",
+        icon: "info",
         allowOutsideClick: false,
-        background: '#1a202c',
-        backdrop: `
-            rgba(0,0,0,0.8)
-            url("https://i.pinimg.com/originals/8b/45/06/8b4506bf30f7af394a4fb53a6159ae90.gif")
-            center top
-            no-repeat
-        `
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        },
     });
 
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbxOcjqwL0umW2pFkaBa_felKxAmAIyCXYKETmpk4hV_nQV34aGzmqQ47XY_Zo04S2OAUQ/exec";
+    const scriptUrl =
+        "https://script.google.com/macros/s/AKfycbxOcjqwL0umW2pFkaBa_felKxAmAIyCXYKETmpk4hV_nQV34aGzmqQ47XY_Zo04S2OAUQ/exec";
 
     const formData = new FormData();
-    formData.append("productName", order.items.map(item => `${item.name} (${item.quantity}x)`).join(", "));
+    formData.append("productName", order.items.map(item => `${item.name} (${item.quantity})`).join(",\n "));
     formData.append("price", order.total);
     formData.append("count", order.items.reduce((total, item) => total + item.quantity, 0));
     formData.append("phone", order.customer.phone);
     formData.append("name", order.customer.name);
-    formData.append("location", `${order.customer.city}, ${order.customer.address}`);
+    formData.append("location", `${order.customer.city} - ${order.customer.address}`);
 
-    fetch(scriptUrl, {
-        method: "POST",
-        body: formData
-    })
-    .then(response => {
-        if (response.ok) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", scriptUrl);
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            console.log("Order sent successfully");
             Swal.fire({
-                title: 'Order Secured!',
-                html: `
-                    <div class="text-center">
-                        <img src="https://i.imgur.com/JbUo5UO.png" class="w-32 mx-auto mb-4" alt="Success">
-                        <h3 class="text-xl font-bold text-white mb-2">Thank you, ${order.customer.name}!</h3>
-                        <p class="text-gray-300 mb-4">Your limited edition items are being prepared.</p>
-                        <div class="bg-gray-800 rounded-lg p-3 mt-4">
-                            <p class="text-purple-400 font-mono text-sm">Order #${Math.floor(Math.random() * 1000000)}</p>
-                        </div>
-                    </div>
-                `,
-                showConfirmButton: true,
-                confirmButtonText: 'Continue Shopping',
-                background: '#1a202c',
-                backdrop: `
-                    rgba(0,0,0,0.7)
-                    url("https://i.gifer.com/origin/8c/8cd3f1898255c045143e1da93936acba_w200.gif")
-                    center left
-                    no-repeat
-                `
+                title: "Demand Reached",
+                text: "Your purchase was successful. We'll contact you soon.",
+                imageUrl: "https://cffstore.vercel.app/img/logo-remove.png",
+                imageAlt: "Custom Success Icon",
+                showConfirmButton: false,
+                timer: 2500,
+                icon: null,
+                background: "#ffff33db",
             });
-            
-            // Clear cart
-            shoppingCart = [];
-            saveCartToLocalStorage();
-            updateCartCount();
         } else {
-            throw new Error('Server error');
+            console.error("Error sending order");
+            Swal.fire({
+                title: "Error",
+                text: "There was an issue processing your order. Please try again.",
+                icon: "error"
+            });
         }
-    })
-    .catch(error => {
+    };
+    xhr.onerror = function () {
+        console.error("Error sending order");
         Swal.fire({
-            title: 'Connection Error',
-            html: `
-                <div class="text-center">
-                    <img src="https://i.imgur.com/9Fg7RZS.png" class="w-24 mx-auto mb-4" alt="Error">
-                    <p class="text-white">Failed to connect to our servers.</p>
-                    <p class="text-gray-400 mt-2">Please check your connection and try again.</p>
-                </div>
-            `,
-            confirmButtonText: 'Try Again',
-            background: '#1a202c'
+            title: "Connection Error",
+            text: "There was a problem connecting to our servers. Please check your connection and try again.",
+            icon: "error"
         });
-    });
+    };
+    xhr.send(formData);
 }

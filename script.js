@@ -648,7 +648,7 @@ function sendOrderToServer(order) {
         },
     });
 
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbwrTBVKzTTii1kyEu8x0BkQwo6lUpimSrcA3ykqLylJg5g2loEa6SV0Yp2Z0ZQk1sdE/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbxOcjqwL0umW2pFkaBa_felKxAmAIyCXYKETmpk4hV_nQV34aGzmqQ47XY_Zo04S2OAUQ/exec";
 
     const formData = new FormData();
     formData.append("productName", order.items.map(item => `${item.name} (${item.size}) × ${item.quantity}`).join(", "));

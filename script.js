@@ -635,41 +635,43 @@ function processOrder(customerInfo) {
 
 // Send order to server
 function sendOrderToServer(order) {
-    Swal.fire({
-        title: "Sending...",
-        text: "Please wait while your purchase is being processed.",
-        icon: "info",
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        background: '#1a202c',
-        color: 'white',
-        willOpen: () => {
-            Swal.showLoading();
-        },
+    return new Promise((resolve, reject) => {
+        Swal.fire({
+            title: "Processing...",
+            text: "Please wait while we confirm your order.",
+            icon: "info",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            background: '#1a202c',
+            willOpen: () => { Swal.showLoading(); }
+        });
+
+        const scriptUrl = "https://script.google.com/macros/s/AKfycbxOcjqwL0umW2pFkaBa_felKxAmAIyCXYKETmpk4hV_nQV34aGzmqQ47XY_Zo04S2OAUQ/exec";
+        const formData = new FormData();
+        
+        formData.append("name", order.customer.name);
+        formData.append("phone", order.customer.phone);
+        formData.append("email", order.customer.email);
+        formData.append("productName", order.items.map(item => 
+            `${item.name} (${item.size}) × ${item.quantity}`).join(", "));
+        formData.append("count", order.items.reduce((total, item) => total + item.quantity, 0));
+        formData.append("price", order.total);
+        formData.append("location", order.customer.address);
+
+        fetch(scriptUrl, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                resolve(data);
+            } else {
+                reject(data.message || "Unknown error occurred");
+            }
+        })
+        .catch(error => {
+            reject(error.message || "Failed to connect to server");
+        });
     });
-
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbxOcjqwL0umW2pFkaBa_felKxAmAIyCXYKETmpk4hV_nQV34aGzmqQ47XY_Zo04S2OAUQ/exec";
-
-    const formData = new FormData();
-    formData.append("productName", order.items.map(item => `${item.name} (${item.size}) × ${item.quantity}`).join(", "));
-    formData.append("price", order.total);
-    formData.append("count", order.items.reduce((total, item) => total + item.quantity, 0));
-    formData.append("phone", order.customer.phone);
-    formData.append("name", order.customer.name);
-    formData.append("email", order.customer.email);
-    formData.append("location", order.customer.address);
-
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", scriptUrl);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            console.log("Order sent successfully");
-        } else {
-            console.error("Error sending order");
-        }
-    };
-    xhr.onerror = function () {
-        console.error("Error sending order");
-    };
-    xhr.send(formData);
 }

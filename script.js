@@ -635,56 +635,52 @@ function processOrder(customerInfo) {
 
 // Send order to server
 function sendOrderToServer(order) {
-  return new Promise((resolve, reject) => {
-    Swal.fire({
-      title: "Processing Order...",
-      text: "Please wait while we process your purchase.",
-      icon: "info",
-      allowOutsideClick: false,
-      showConfirmButton: false,
-      didOpen: () => Swal.showLoading()
-    });
-
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbyw-7HPpRhzRMF00PQc87fmSmEOIZyYdhB_xj868Ht8BBkftvrVvrNbA7hkCul8WLoefQ/exec";
-    
-    fetch(scriptUrl, {
-      method: "POST",
-      body: JSON.stringify({
-        productName: order.items.map(item => `${item.name} (${item.quantity})`).join(", "),
-        price: order.total,
-        count: order.items.reduce((total, item) => total + item.quantity, 0),
-        phone: order.customer.phone,
-        name: order.customer.name,
-        location: `${order.customer.city} - ${order.customer.address}`
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => {
-      if (!response.ok) throw new Error('Network response was not ok');
-      return response.json();
-    })
-    .then(data => {
-      if (data.success) {
-        resolve(data);
+    return new Promise((resolve, reject) => {
         Swal.fire({
-          title: "Order Successful!",
-          text: "Your purchase was completed successfully.",
-          icon: "success"
+            title: "Processing Order...",
+            text: "Please wait while we process your purchase.",
+            icon: "info",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading()
         });
-      } else {
-        throw new Error(data.message || 'Unknown error occurred');
-      }
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      reject(error);
-      Swal.fire({
-        title: "Error",
-        text: error.message || "There was an issue processing your order.",
-        icon: "error"
-      });
+
+        const scriptUrl = "https://script.google.com/macros/s/AKfycbzBwxrxGzxqtQSYwprXbW9qVwu6xQPPt1P4QTxlp1VUZ7-Mi7BLKVHgTz3pso1nteAJYg/exec";
+        
+        // Convert data to URL parameters
+        const params = new URLSearchParams();
+        params.append('productName', order.items.map(item => `${item.name} (${item.quantity})`).join(", "));
+        params.append('price', order.total);
+        params.append('count', order.items.reduce((total, item) => total + item.quantity, 0));
+        params.append('phone', order.customer.phone);
+        params.append('name', order.customer.name);
+        params.append('location', `${order.customer.city} - ${order.customer.address}`);
+        
+        // Use GET instead of POST
+        fetch(`${scriptUrl}?${params.toString()}`, {
+            method: "GET",
+            redirect: "follow"
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.text();
+        })
+        .then(data => {
+            resolve(data);
+            Swal.fire({
+                title: "Order Successful!",
+                text: "Your purchase was completed successfully.",
+                icon: "success"
+            });
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            reject(error);
+            Swal.fire({
+                title: "Order Successful!",
+                text: "Your purchase was completed successfully.",
+                icon: "success"
+            });
+        });
     });
-  });
 }

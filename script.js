@@ -635,43 +635,72 @@ function processOrder(customerInfo) {
 
 // Send order to server
 function sendOrderToServer(order) {
+    Swal.fire({
+        title: "Sending...",
+        text: "Please wait while your purchase is being processed.",
+        icon: "info",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        background: '#1a202c',
+        color: 'white',
+        willOpen: () => {
+            Swal.showLoading();
+        },
+    });
+
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbxOcjqwL0umW2pFkaBa_felKxAmAIyCXYKETmpk4hV_nQV34aGzmqQ47XY_Zo04S2OAUQ/exec";
+    
+    // Prepare query parameters
+    const params = new URLSearchParams();
+    params.append("productName", order.items.map(item => `${item.name} (${item.size}) × ${item.quantity}`).join(", "));
+    params.append("price", order.total);
+    params.append("count", order.items.reduce((total, item) => total + item.quantity, 0));
+    params.append("phone", order.customer.phone);
+    params.append("name", order.customer.name);
+    params.append("email", order.customer.email);
+    params.append("location", order.customer.address);
+
+    // Create JSONP request
     return new Promise((resolve, reject) => {
-        Swal.fire({
-            title: "Processing...",
-            text: "Please wait while we confirm your order.",
-            icon: "info",
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            background: '#1a202c',
-            willOpen: () => { Swal.showLoading(); }
-        });
-
-        const scriptUrl = "https://script.google.com/macros/s/AKfycbxOcjqwL0umW2pFkaBa_felKxAmAIyCXYKETmpk4hV_nQV34aGzmqQ47XY_Zo04S2OAUQ/exec";
-        const formData = new FormData();
+        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+        const script = document.createElement('script');
         
-        formData.append("name", order.customer.name);
-        formData.append("phone", order.customer.phone);
-        formData.append("email", order.customer.email);
-        formData.append("productName", order.items.map(item => 
-            `${item.name} (${item.size}) × ${item.quantity}`).join(", "));
-        formData.append("count", order.items.reduce((total, item) => total + item.quantity, 0));
-        formData.append("price", order.total);
-        formData.append("location", order.customer.address);
-
-        fetch(scriptUrl, {
-            method: "POST",
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            
             if (data.status === "success") {
                 resolve(data);
+                Swal.fire({
+                    title: "Order Successful!",
+                    text: "Your order has been placed successfully.",
+                    icon: "success",
+                    background: '#1a202c'
+                });
             } else {
-                reject(data.message || "Unknown error occurred");
+                reject(data);
+                Swal.fire({
+                    title: "Error",
+                    text: "There was an issue processing your order.",
+                    icon: "error",
+                    background: '#1a202c'
+                });
             }
-        })
-        .catch(error => {
-            reject(error.message || "Failed to connect to server");
-        });
+        };
+
+        script.src = scriptUrl + '?' + params.toString() + '&callback=' + callbackName;
+        script.onerror = () => {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            reject(new Error('Request failed'));
+            Swal.fire({
+                title: "Connection Error",
+                text: "Failed to connect to the server.",
+                icon: "error",
+                background: '#1a202c'
+            });
+        };
+
+        document.body.appendChild(script);
     });
 }

@@ -372,7 +372,7 @@ function addToCart(product, quantity = 1, size = 'M') {
     // Show success notification
     const Toast = Swal.mixin({
         toast: true,
-        position: 'top-start',
+        position: 'top-end',
         showConfirmButton: false,
         timer: 2000,
         timerProgressBar: true,
@@ -636,71 +636,83 @@ function processOrder(customerInfo) {
 // Send order to server
 function sendOrderToServer(order) {
     Swal.fire({
-        title: "Sending...",
-        text: "Please wait while your purchase is being processed.",
-        icon: "info",
-        allowOutsideClick: false,
+        title: 'Processing Your Order...',
+        html: `
+            <div class="flex flex-col items-center">
+                <div class="anime-spinner mb-4"></div>
+                <p class="text-gray-300">Securing your limited edition items...</p>
+            </div>
+        `,
         showConfirmButton: false,
+        allowOutsideClick: false,
         background: '#1a202c',
-        color: 'white',
-        willOpen: () => {
-            Swal.showLoading();
-        },
+        backdrop: `
+            rgba(0,0,0,0.8)
+            url("https://i.pinimg.com/originals/8b/45/06/8b4506bf30f7af394a4fb53a6159ae90.gif")
+            center top
+            no-repeat
+        `
     });
 
     const scriptUrl = "https://script.google.com/macros/s/AKfycbxOcjqwL0umW2pFkaBa_felKxAmAIyCXYKETmpk4hV_nQV34aGzmqQ47XY_Zo04S2OAUQ/exec";
-    
-    // Prepare query parameters
-    const params = new URLSearchParams();
-    params.append("productName", order.items.map(item => `${item.name} (${item.size}) × ${item.quantity}`).join(", "));
-    params.append("price", order.total);
-    params.append("count", order.items.reduce((total, item) => total + item.quantity, 0));
-    params.append("phone", order.customer.phone);
-    params.append("name", order.customer.name);
-    params.append("email", order.customer.email);
-    params.append("location", order.customer.address);
 
-    // Create JSONP request
-    return new Promise((resolve, reject) => {
-        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-        const script = document.createElement('script');
-        
-        window[callbackName] = function(data) {
-            delete window[callbackName];
-            document.body.removeChild(script);
-            
-            if (data.status === "success") {
-                resolve(data);
-                Swal.fire({
-                    title: "Order Successful!",
-                    text: "Your order has been placed successfully.",
-                    icon: "success",
-                    background: '#1a202c'
-                });
-            } else {
-                reject(data);
-                Swal.fire({
-                    title: "Error",
-                    text: "There was an issue processing your order.",
-                    icon: "error",
-                    background: '#1a202c'
-                });
-            }
-        };
+    const formData = new FormData();
+    formData.append("productName", order.items.map(item => `${item.name} (${item.quantity}x)`).join(", "));
+    formData.append("price", order.total);
+    formData.append("count", order.items.reduce((total, item) => total + item.quantity, 0));
+    formData.append("phone", order.customer.phone);
+    formData.append("name", order.customer.name);
+    formData.append("location", `${order.customer.city}, ${order.customer.address}`);
 
-        script.src = scriptUrl + '?' + params.toString() + '&callback=' + callbackName;
-        script.onerror = () => {
-            delete window[callbackName];
-            document.body.removeChild(script);
-            reject(new Error('Request failed'));
+    fetch(scriptUrl, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
             Swal.fire({
-                title: "Connection Error",
-                text: "Failed to connect to the server.",
-                icon: "error",
-                background: '#1a202c'
+                title: 'Order Secured!',
+                html: `
+                    <div class="text-center">
+                        <img src="https://i.imgur.com/JbUo5UO.png" class="w-32 mx-auto mb-4" alt="Success">
+                        <h3 class="text-xl font-bold text-white mb-2">Thank you, ${order.customer.name}!</h3>
+                        <p class="text-gray-300 mb-4">Your limited edition items are being prepared.</p>
+                        <div class="bg-gray-800 rounded-lg p-3 mt-4">
+                            <p class="text-purple-400 font-mono text-sm">Order #${Math.floor(Math.random() * 1000000)}</p>
+                        </div>
+                    </div>
+                `,
+                showConfirmButton: true,
+                confirmButtonText: 'Continue Shopping',
+                background: '#1a202c',
+                backdrop: `
+                    rgba(0,0,0,0.7)
+                    url("https://i.gifer.com/origin/8c/8cd3f1898255c045143e1da93936acba_w200.gif")
+                    center left
+                    no-repeat
+                `
             });
-        };
-
-        document.body.appendChild(script);
+            
+            // Clear cart
+            shoppingCart = [];
+            saveCartToLocalStorage();
+            updateCartCount();
+        } else {
+            throw new Error('Server error');
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            title: 'Connection Error',
+            html: `
+                <div class="text-center">
+                    <img src="https://i.imgur.com/9Fg7RZS.png" class="w-24 mx-auto mb-4" alt="Error">
+                    <p class="text-white">Failed to connect to our servers.</p>
+                    <p class="text-gray-400 mt-2">Please check your connection and try again.</p>
+                </div>
+            `,
+            confirmButtonText: 'Try Again',
+            background: '#1a202c'
+        });
     });
 }

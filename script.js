@@ -634,62 +634,57 @@ function processOrder(customerInfo) {
 }
 
 // Send order to server
-
 function sendOrderToServer(order) {
+  return new Promise((resolve, reject) => {
     Swal.fire({
-        title: "Sending...",
-        titleColor: "#fc1111",
-        text: "Please wait while your purchase is being processed.",
-        icon: "info",
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-            Swal.showLoading();
-        },
+      title: "Processing Order...",
+      text: "Please wait while we process your purchase.",
+      icon: "info",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
     });
 
-    const scriptUrl =
-        "https://script.google.com/macros/s/AKfycbxOcjqwL0umW2pFkaBa_felKxAmAIyCXYKETmpk4hV_nQV34aGzmqQ47XY_Zo04S2OAUQ/exec";
-
-    const formData = new FormData();
-    formData.append("productName", order.items.map(item => `${item.name} (${item.quantity})`).join(",\n "));
-    formData.append("price", order.total);
-    formData.append("count", order.items.reduce((total, item) => total + item.quantity, 0));
-    formData.append("phone", order.customer.phone);
-    formData.append("name", order.customer.name);
-    formData.append("location", `${order.customer.city} - ${order.customer.address}`);
-
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", scriptUrl);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            console.log("Order sent successfully");
-            Swal.fire({
-                title: "Demand Reached",
-                text: "Your purchase was successful. We'll contact you soon.",
-                imageUrl: "https://cffstore.vercel.app/img/logo-remove.png",
-                imageAlt: "Custom Success Icon",
-                showConfirmButton: false,
-                timer: 2500,
-                icon: null,
-                background: "#ffff33db",
-            });
-        } else {
-            console.error("Error sending order");
-            Swal.fire({
-                title: "Error",
-                text: "There was an issue processing your order. Please try again.",
-                icon: "error"
-            });
-        }
-    };
-    xhr.onerror = function () {
-        console.error("Error sending order");
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbyw-7HPpRhzRMF00PQc87fmSmEOIZyYdhB_xj868Ht8BBkftvrVvrNbA7hkCul8WLoefQ/exec";
+    
+    fetch(scriptUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        productName: order.items.map(item => `${item.name} (${item.quantity})`).join(", "),
+        price: order.total,
+        count: order.items.reduce((total, item) => total + item.quantity, 0),
+        phone: order.customer.phone,
+        name: order.customer.name,
+        location: `${order.customer.city} - ${order.customer.address}`
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        resolve(data);
         Swal.fire({
-            title: "Connection Error",
-            text: "There was a problem connecting to our servers. Please check your connection and try again.",
-            icon: "error"
+          title: "Order Successful!",
+          text: "Your purchase was completed successfully.",
+          icon: "success"
         });
-    };
-    xhr.send(formData);
+      } else {
+        throw new Error(data.message || 'Unknown error occurred');
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      reject(error);
+      Swal.fire({
+        title: "Error",
+        text: error.message || "There was an issue processing your order.",
+        icon: "error"
+      });
+    });
+  });
 }

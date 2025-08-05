@@ -31,24 +31,44 @@
     border-color: #805ad5;
 }
 
-/* Image gallery styles */
+/* Product card image container */
 .image-gallery {
-    position: relative;
-    height: 300px;
-    overflow: hidden;
+    background-color: #2d3748; /* Slightly lighter than card bg for contrast */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Image styling */
 .gallery-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.5s ease;
-    opacity: 0;
+    transition: opacity 0.3s ease;
+    object-fit: contain; /* Maintain aspect ratio */
+    max-width: 100%;
+    max-height: 100%;
 }
 
+/* For modal images */
+.swal2-container .image-gallery {
+    background-color: #2d3748;
+    border-radius: 0.5rem;
+}
+
+/* Size options styling */
+.size-option {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    background-color: #2d3748;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.size-option.selected {
+    background-color: #6b46c1;
+    color: white;
+}
 .gallery-image.active {
     opacity: 1;
 }

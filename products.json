@@ -1,68 +1,74 @@
 [
     {
         "id": 1,
-        "name": "Naruto Uzumaki Hoodie",
-        "price": 49.99,
-        "images": ["/product/naruto-hoodie-front.jpg", "/product/naruto-hoodie-back.jpg"],
+        "name": "Tunisa T-Shirt",
+        "price": 50,
+        "images": ["https://i.postimg.cc/bNyc6YGz/9.png", "https://i.postimg.cc/yxn5q9J7/4.png"],
         "description": "Limited edition Naruto hoodie with Uzumaki clan symbol embroidery. 100% cotton, oversized fit.",
         "category": ["naruto", "hoodie", "limited"],
         "featured": true,
-        "sizes": ["S", "M", "L", "XL"],
-        "colors": ["Orange", "Black"]
+        "sizes": ["S", "M", "L", "XL"]
     },
     {
         "id": 2,
-        "name": "Demon Slayer Kimono Jacket",
-        "price": 89.99,
-        "images": ["/product/demonslayer-jacket.jpg"],
+        "name": "Sidi Bou Said",
+        "price": 50,
+        "images": ["https://i.postimg.cc/xCLDZcyd/8.png"],
         "description": "Premium Demon Slayer Corps-inspired kimono jacket with breathable fabric and intricate patterns.",
         "category": ["demon slayer", "jacket", "premium"],
         "featured": true,
-        "sizes": ["M", "L", "XL"],
-        "colors": ["Black/Green", "Black/Blue"]
+        "sizes": ["M", "L", "XL"]
     },
     {
         "id": 3,
-        "name": "Attack on Titan Scout Regiment Tee",
-        "price": 29.99,
-        "images": ["/product/aot-tee-front.jpg", "/product/aot-tee-back.jpg"],
+        "name": "DANDADAN",
+        "price": 50,
+        "images": ["https://i.postimg.cc/3NyrWKg5/6.png" , "https://i.postimg.cc/zXCvhGs8/7.png"],
         "description": "Classic Wings of Freedom design on soft cotton tee. Pre-shrunk fabric with reinforced stitching.",
         "category": ["attack on titan", "t-shirt", "basic"],
         "featured": false,
-        "sizes": ["XS", "S", "M", "L", "XL"],
-        "colors": ["White", "Black"]
+        "sizes": ["XS", "S", "M", "L", "XL"]
     },
     {
         "id": 4,
-        "name": "Jujutsu Kaisen Cursed Energy Joggers",
-        "price": 59.99,
-        "images": ["/product/jjk-joggers.jpg"],
+        "name": "DANDADAN",
+        "price": 50,
+        "images": ["https://i.postimg.cc/2SWq2xLR/2.png"],
         "description": "High-waisted joggers with JJK curse markings pattern. Elastic waistband with drawstring.",
         "category": ["jujutsu kaisen", "pants", "streetwear"],
         "featured": false,
-        "sizes": ["S", "M", "L"],
-        "colors": ["Black", "Purple"]
+        "sizes": ["S", "M", "L"]
     },
     {
         "id": 5,
-        "name": "One Piece Straw Hat Crew Denim Jacket",
-        "price": 79.99,
-        "images": ["/product/onepiece-jacket-front.jpg", "/product/onepiece-jacket-back.jpg"],
+        "name": "Gachiakuta",
+        "price": 50,
+        "images": ["https://i.postimg.cc/SQZm8zs6/5.png"],
         "description": "Distressed denim jacket featuring Straw Hat Jolly Roger back print and crew logos.",
         "category": ["one piece", "jacket", "denim"],
         "featured": true,
-        "sizes": ["S", "M", "L", "XL"],
-        "colors": ["Light Blue", "Black"]
+        "sizes": ["S", "M", "L", "XL"]
     },
     {
         "id": 6,
-        "name": "My Hero Academia UA High Uniform Set",
-        "price": 129.99,
-        "images": ["/product/mha-uniform.jpg"],
+        "name": "Chainsaw Man",
+        "price": 50,
+        "images": ["https://i.postimg.cc/3RSzymBW/10.png"],
         "description": "Complete UA High uniform replica with blazer, dress shirt, tie, and pants/skirt options.",
         "category": ["my hero academia", "uniform", "cosplay"],
         "featured": true,
-        "sizes": ["XS", "S", "M", "L"],
-        "colors": ["Standard"]
+        "sizes": ["XS", "S", "M", "L"]
+    },
+    {
+        "id": 7,
+        "name": "Hunter X Hunter",
+        "price": 50,
+        "images": ["https://i.postimg.cc/GpVdNWWX/1.png" , "https://i.postimg.cc/PryhhvGp/3.png"],
+        "description": "Complete UA High uniform replica with blazer, dress shirt, tie, and pants/skirt options.",
+        "category": ["my hero academia", "uniform", "cosplay"],
+        "featured": true,
+        "sizes": ["XS", "S", "M", "L"]
     }
+
+
 ]
